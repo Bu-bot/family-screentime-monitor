@@ -42,6 +42,52 @@
             opacity: 0.9;
         }
 
+        .view-selector {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .view-section {
+            text-align: center;
+        }
+
+        .view-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tv-selector {
+            display: flex;
+            justify-content: center;
+        }
+
+        .tv-btn {
+            background: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tv-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .tv-btn.active {
+            background: #4ECDC4;
+            color: white;
+        }
+
         .child-selector {
             display: flex;
             justify-content: center;
@@ -200,72 +246,85 @@
             <p>Keeping tabs on digital habits since 2025</p>
         </div>
 
-        <div class="child-selector">
-    <button class="child-btn active" onclick="selectChild('emma', this)">👧 Emma (12)</button>
-    <button class="child-btn" onclick="selectChild('jake', this)">👦 Jake (9)</button>
-</div>
+        <div class="view-selector">
+            <div class="view-section">
+                <h3>📱 Individual Screen Time</h3>
+                <div class="child-selector">
+                    <button class="child-btn active" onclick="selectChild('mimi', this)">👧 Mimi (12)</button>
+                    <button class="child-btn" onclick="selectChild('nigel', this)">👦 Nigel (9)</button>
+                </div>
+            </div>
+            
+            <div class="view-section">
+                <h3>📺 Family TV Viewing</h3>
+                <div class="tv-selector">
+                    <button class="tv-btn" onclick="selectTV(this)">📺 Family TV</button>
+                </div>
+            </div>
+        </div>      
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="todayTime">3h 45m</div>
-                <div class="stat-label">Today's Screen Time</div>
+                <div class="stat-value" id="todayTime">Loading...</div>
+                <div class="stat-label" id="todayLabel">Today's Screen Time</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="weeklyAvg">4h 12m</div>
-                <div class="stat-label">Weekly Average</div>
+                <div class="stat-value" id="weeklyAvg">Loading...</div>
+                <div class="stat-label" id="weeklyLabel">Weekly Average</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="mostUsedApp">YouTube</div>
-                <div class="stat-label">Most Used App</div>
+                <div class="stat-value" id="mostUsedApp">Loading...</div>
+                <div class="stat-label" id="mostUsedLabel">Most Used App</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="streakDays">3 days</div>
-                <div class="stat-label">Under Limit Streak</div>
+                <div class="stat-value" id="streakDays">Loading...</div>
+                <div class="stat-label" id="streakLabel">Sessions</div>
             </div>
         </div>
 
         <div class="charts-grid">
             <div class="chart-container">
-                <div class="chart-title">📊 Weekly Screen Time Trend</div>
+                <div class="chart-title" id="chartTitle">📊 Weekly Screen Time Trend</div>
                 <canvas id="weeklyChart"></canvas>
             </div>
             
             <div class="chart-container">
-                <div class="chart-title">📱 App Usage Breakdown</div>
+                <div class="chart-title" id="appChartTitle">📱 App Usage Breakdown</div>
                 <canvas id="appChart"></canvas>
             </div>
         </div>
 
         <div class="device-list">
-            <div class="chart-title">📱 Device Usage Today</div>
-            <div class="device-item">
-                <span class="device-name">📱 iPhone</span>
-                <span class="device-time">2h 30m</span>
-            </div>
-            <div class="device-item">
-                <span class="device-name">⌚ Apple Watch</span>
-                <span class="device-time">45m</span>
-            </div>
-            <div class="device-item">
-                <span class="device-name">🎮 Nintendo Switch</span>
-                <span class="device-time">30m</span>
-            </div>
-            <div class="device-item">
-                <span class="device-name">📺 TV</span>
-                <span class="device-time">0m</span>
+            <div class="chart-title" id="deviceListTitle">📱 Device Usage Today</div>
+            <div id="deviceContent">
+                <div class="device-item">
+                    <span class="device-name">📱 iPhone</span>
+                    <span class="device-time">Loading...</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-name">⌚ Apple Watch</span>
+                    <span class="device-time">Loading...</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-name">🎮 Nintendo Switch</span>
+                    <span class="device-time">Loading...</span>
+                </div>
+                <div class="device-item">
+                    <span class="device-name">📺 TV</span>
+                    <span class="device-time">Loading...</span>
+                </div>
             </div>
         </div>
     </div>
 
-  <script>
-        let currentChild = 1; // Start with Emma (ID 1)
+    <script>
+        let currentChild = 1; // Start with Mimi (ID 1)
         let weeklyChart, appChart;
         let childrenData = {};
         let isInitialized = false;
 
         // Initialize charts
         function initCharts() {
-            // Weekly trend chart
             const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
             weeklyChart = new Chart(weeklyCtx, {
                 type: 'line',
@@ -283,11 +342,7 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -301,7 +356,6 @@
                 }
             });
 
-            // App usage pie chart
             const appCtx = document.getElementById('appChart').getContext('2d');
             appChart = new Chart(appCtx, {
                 type: 'doughnut',
@@ -309,40 +363,26 @@
                     labels: ['Loading...'],
                     datasets: [{
                         data: [1],
-                        backgroundColor: [
-                            '#FF6B6B',
-                            '#4ECDC4', 
-                            '#45B7D1',
-                            '#96CEB4',
-                            '#FFEAA7',
-                            '#DDA0DD',
-                            '#98D8C8'
-                        ],
+                        backgroundColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
+                    plugins: { legend: { position: 'bottom' } }
                 }
             });
         }
 
-        // Convert minutes to readable format
         function formatMinutes(minutes) {
             if (!minutes || minutes === 0) return '0m';
             const hours = Math.floor(minutes / 60);
             const mins = minutes % 60;
-            if (hours === 0) return `${mins}m`;
-            if (mins === 0) return `${hours}h`;
-            return `${hours}h ${mins}m`;
+            if (hours === 0) return mins + 'm';
+            if (mins === 0) return hours + 'h';
+            return hours + 'h ' + mins + 'm';
         }
 
-        // Show loading state
         function showLoadingState() {
             document.getElementById('todayTime').textContent = 'Loading...';
             document.getElementById('weeklyAvg').textContent = 'Loading...';
@@ -350,39 +390,32 @@
             document.getElementById('streakDays').textContent = 'Loading...';
         }
 
-        // Load real data for a child
         async function loadChildData(childId) {
             try {
-                console.log(`📊 Loading data for child ${childId}`);
+                console.log('📊 Loading data for child', childId);
                 
-                // Load summary data
-                const summaryResponse = await fetch(`/api/child/${childId}/summary`);
+                const summaryResponse = await fetch('/api/child/' + childId + '/summary');
                 const summary = await summaryResponse.json();
                 
-                // Load weekly data
-                const weeklyResponse = await fetch(`/api/child/${childId}/weekly`);
+                const weeklyResponse = await fetch('/api/child/' + childId + '/weekly');
                 const weekly = await weeklyResponse.json();
                 
-                // Load app data
-                const appsResponse = await fetch(`/api/child/${childId}/apps`);
+                const appsResponse = await fetch('/api/child/' + childId + '/apps');
                 const apps = await appsResponse.json();
                 
-                // Store the data
                 childrenData[childId] = {
                     summary: summary,
                     weekly: weekly.weekly_data || [],
                     apps: apps.app_usage || []
                 };
                 
-                console.log(`✅ Data loaded for child ${childId}:`, childrenData[childId]);
-                
+                console.log('✅ Data loaded for child', childId);
                 return childrenData[childId];
                 
             } catch (error) {
-                console.error(`❌ Error loading data for child ${childId}:`, error);
-                // Fallback to empty data if API fails
+                console.error('❌ Error loading data for child', childId, ':', error);
                 childrenData[childId] = {
-                    summary: { today_minutes: 0, weekly_avg_minutes: 0, most_used_app: 'None', session_count: 0 },
+                    summary: { today_minutes: 0, weekly_avg_minutes: 0, most_used_app: 'No data', session_count: 0 },
                     weekly: [],
                     apps: []
                 };
@@ -390,50 +423,65 @@
             }
         }
 
-        // Update dashboard with current child's data
+        async function loadTVData() {
+            try {
+                console.log('📺 Loading TV data...');
+                
+                const summaryResponse = await fetch('/api/tv/summary');
+                const summary = await summaryResponse.json();
+                
+                const servicesResponse = await fetch('/api/tv/services');
+                const services = await servicesResponse.json();
+                
+                childrenData['tv'] = {
+                    summary: summary,
+                    services: services.service_usage || [],
+                    weekly: []
+                };
+                
+                console.log('✅ TV data loaded:', childrenData['tv']);
+                return childrenData['tv'];
+                
+            } catch (error) {
+                console.error('❌ Error loading TV data:', error);
+                childrenData['tv'] = {
+                    summary: { today_minutes: 0, weekly_avg_minutes: 0, most_used_service: 'None', session_count: 0 },
+                    services: [],
+                    weekly: []
+                };
+                return childrenData['tv'];
+            }
+        }
+
         function updateDashboard() {
             console.log('🔄 updateDashboard called for child:', currentChild);
-            console.log('🔄 Available data:', childrenData);
             
             const data = childrenData[currentChild];
             if (!data) {
-                console.log('⚠️ No data available for current child', currentChild, ', showing loading state');
+                console.log('⚠️ No data available, showing loading state');
                 showLoadingState();
                 return;
             }
             
-            console.log('✅ Updating dashboard with data for child', currentChild, ':', data);
+            console.log('✅ Updating dashboard with data:', data);
             
-            // Update stats cards with explicit logging
-            const todayMinutes = data.summary.today_minutes;
-            const weeklyAvg = data.summary.weekly_avg_minutes;
-            const mostUsedApp = data.summary.most_used_app;
-            const sessionCount = data.summary.session_count;
-            
-            console.log('📊 Stats:', { todayMinutes, weeklyAvg, mostUsedApp, sessionCount });
-            
-            document.getElementById('todayTime').textContent = formatMinutes(todayMinutes);
-            document.getElementById('weeklyAvg').textContent = formatMinutes(weeklyAvg);
-            document.getElementById('mostUsedApp').textContent = mostUsedApp || 'None';
-            document.getElementById('streakDays').textContent = `${sessionCount} sessions`;
-            
-            console.log('✅ Stats cards updated successfully');
+            document.getElementById('todayTime').textContent = formatMinutes(data.summary.today_minutes);
+            document.getElementById('weeklyAvg').textContent = formatMinutes(data.summary.weekly_avg_minutes);
+            document.getElementById('mostUsedApp').textContent = data.summary.most_used_app || 'None';
+            document.getElementById('streakDays').textContent = data.summary.session_count + ' sessions';
             
             // Update weekly chart
-            if (data.weekly.length > 0) {
-                // Prepare weekly data (last 7 days)
+            if (data.weekly && data.weekly.length > 0) {
                 const weeklyMinutes = new Array(7).fill(0);
                 const labels = [];
                 const today = new Date();
                 
-                // Generate labels for last 7 days
                 for (let i = 6; i >= 0; i--) {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
                     labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
                 }
                 
-                // Fill in actual data
                 data.weekly.forEach(day => {
                     const dayDate = new Date(day.date);
                     const dayIndex = Math.floor((today - dayDate) / (1000 * 60 * 60 * 24));
@@ -445,16 +493,14 @@
                 weeklyChart.data.labels = labels;
                 weeklyChart.data.datasets[0].data = weeklyMinutes;
             } else {
-                // No data available
                 weeklyChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
             }
             weeklyChart.update();
             
             // Update app chart
-            if (data.apps.length > 0) {
+            if (data.apps && data.apps.length > 0) {
                 const appNames = data.apps.map(app => app.app_name);
                 const appMinutes = data.apps.map(app => app.total_minutes);
-                
                 appChart.data.labels = appNames;
                 appChart.data.datasets[0].data = appMinutes;
             } else {
@@ -466,14 +512,78 @@
             console.log('✅ Dashboard update complete!');
         }
 
-        // Update dashboard for selected child
-        async function selectChild(childName, buttonElement) {
-            console.log(`🔄 Switching to child: ${childName}`);
+        function updateTVDashboard() {
+            console.log('📺 Updating TV dashboard');
             
-            // Map child names to IDs
+            const data = childrenData['tv'];
+            if (!data) {
+                showLoadingState();
+                return;
+            }
+            
+            // Update stats cards for TV viewing
+            document.getElementById('todayTime').textContent = formatMinutes(data.summary.today_minutes);
+            document.getElementById('weeklyAvg').textContent = formatMinutes(data.summary.weekly_avg_minutes);
+            document.getElementById('mostUsedApp').textContent = data.summary.most_used_service || 'No viewing yet';
+            document.getElementById('streakDays').textContent = data.summary.session_count + ' sessions';
+            
+            // Update labels for TV mode
+            document.getElementById('todayLabel').textContent = "Today's TV Time";
+            document.getElementById('weeklyLabel').textContent = "Weekly Average";
+            document.getElementById('mostUsedLabel').textContent = "Most Used Service";
+            document.getElementById('streakLabel').textContent = "TV Sessions";
+            
+            // Update chart titles
+            document.getElementById('chartTitle').textContent = '📺 Weekly TV Viewing Trend';
+            document.getElementById('appChartTitle').textContent = '🎬 Streaming Services';
+            document.getElementById('deviceListTitle').textContent = '📺 Streaming Services Today';
+            
+            // Update weekly chart (placeholder for now)
+            weeklyChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
+            weeklyChart.update();
+            
+            // Update services pie chart
+            if (data.services.length > 0) {
+                const serviceNames = data.services.map(service => service.service);
+                const serviceMinutes = data.services.map(service => service.total_minutes);
+                
+                appChart.data.labels = serviceNames;
+                appChart.data.datasets[0].data = serviceMinutes;
+            } else {
+                appChart.data.labels = ['No viewing data'];
+                appChart.data.datasets[0].data = [1];
+            }
+            appChart.update();
+            
+            // Update device list with streaming services
+            const deviceContent = document.getElementById('deviceContent');
+            if (deviceContent) {
+                if (data.services.length > 0) {
+                    deviceContent.innerHTML = data.services.map(service => `
+                        <div class="device-item">
+                            <span class="device-name">🎬 ${service.service}</span>
+                            <span class="device-time">${formatMinutes(service.total_minutes)}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    deviceContent.innerHTML = `
+                        <div class="device-item">
+                            <span class="device-name">📺 No viewing detected yet</span>
+                            <span class="device-time">0m</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            console.log('✅ TV dashboard updated successfully');
+        }
+
+        function selectChild(childName, buttonElement) {
+            console.log('🔄 Switching to child:', childName);
+            
             const childMap = {
-                'emma': 1,
-                'jake': 2
+                'mimi': 1,
+                'nigel': 2
             };
             
             const childId = childMap[childName];
@@ -484,8 +594,8 @@
             
             currentChild = childId;
             
-            // Update button states immediately
-            document.querySelectorAll('.child-btn').forEach(btn => {
+            // Update button states
+            document.querySelectorAll('.child-btn, .tv-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
@@ -493,26 +603,53 @@
                 buttonElement.classList.add('active');
             }
             
-            // Show loading state while fetching data
-            showLoadingState();
+            // Reset labels for individual child mode
+            document.getElementById('todayLabel').textContent = "Today's Screen Time";
+            document.getElementById('weeklyLabel').textContent = "Weekly Average";
+            document.getElementById('mostUsedLabel').textContent = "Most Used App";
+            document.getElementById('streakLabel').textContent = "Sessions";
+            document.getElementById('chartTitle').textContent = '📊 Weekly Screen Time Trend';
+            document.getElementById('appChartTitle').textContent = '📱 App Usage Breakdown';
+            document.getElementById('deviceListTitle').textContent = '📱 Device Usage Today';
             
-            // Load data if not cached, then update dashboard
-            if (!childrenData[childId]) {
-                console.log(`📡 Loading fresh data for child ${childId}`);
-                await loadChildData(childId);
+            // Load and display child data
+            if (childrenData[childId]) {
+                console.log('✅ Using cached data for child', childId);
+                updateDashboard();
             } else {
-                console.log(`✅ Using cached data for child ${childId}`);
+                console.log('📡 Loading data for child', childId);
+                showLoadingState();
+                loadChildData(childId).then(() => {
+                    updateDashboard();
+                });
             }
-            
-            // Update the dashboard
-            updateDashboard();
         }
 
-        // Check server status
+        function selectTV(buttonElement) {
+            console.log('📺 Switching to Family TV view');
+            
+            // Update button states
+            document.querySelectorAll('.child-btn, .tv-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+            
+            // Set current view to TV
+            currentChild = 'tv';
+            
+            // Load TV data
+            showLoadingState();
+            loadTVData().then(() => {
+                updateTVDashboard();
+            });
+        }
+
         async function checkServerStatus() {
             try {
                 const response = await fetch('/api/health');
-                const data = await response.json();
                 document.getElementById('statusIndicator').innerHTML = '🟢 System Online';
                 document.getElementById('statusIndicator').style.background = '#4CAF50';
             } catch (error) {
@@ -521,7 +658,6 @@
             }
         }
 
-        // Load all children data from API
         async function loadAllChildrenData() {
             try {
                 console.log('👶 Loading children list...');
@@ -529,38 +665,32 @@
                 const data = await response.json();
                 console.log('✅ Children list loaded:', data);
                 
-                // Load data for each child
                 if (data.children && data.children.length > 0) {
-                    console.log('📊 Loading screen time data for all children...');
+                    console.log('📊 Loading screen time data...');
                     
-                    // Load Emma first (she's the default)
+                    // Load Mimi first
                     await loadChildData(1);
-                    console.log('✅ Emma data loaded, updating dashboard...');
-                    
-                    // Set current child and update dashboard immediately
                     currentChild = 1;
                     updateDashboard();
                     
-                    // Make sure Emma button is active
+                    // Make sure Mimi button is active
                     document.querySelectorAll('.child-btn').forEach(btn => {
                         btn.classList.remove('active');
-                        if (btn.textContent.toLowerCase().includes('emma')) {
+                        if (btn.textContent.toLowerCase().includes('mimi')) {
                             btn.classList.add('active');
                         }
                     });
                     
-                    // Then load Jake in the background
+                    // Load Nigel in background
                     if (data.children.length > 1) {
                         await loadChildData(2);
-                        console.log('✅ Jake data loaded');
                     }
                     
-                    console.log('✅ All data loaded and dashboard initialized');
+                    console.log('✅ All data loaded');
                     isInitialized = true;
                 }
             } catch (error) {
                 console.error('❌ Error loading children data:', error);
-                // Show error state instead of loading forever
                 document.getElementById('todayTime').textContent = 'Error';
                 document.getElementById('weeklyAvg').textContent = 'Error';
                 document.getElementById('mostUsedApp').textContent = 'Error';
@@ -568,28 +698,18 @@
             }
         }
 
-        // Initialize everything when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Initializing Family Screen Time Dashboard');
-            
-            // Show loading state initially
+            console.log('🚀 Initializing Dashboard');
             showLoadingState();
-            
             initCharts();
             checkServerStatus();
             loadAllChildrenData();
             
-            // Check status every 30 seconds
             setInterval(checkServerStatus, 30000);
-            
-            // Refresh data every 5 minutes
             setInterval(() => {
-                if (isInitialized) {
-                    loadAllChildrenData();
-                }
+                if (isInitialized) loadAllChildrenData();
             }, 5 * 60 * 1000);
         });
     </script>
-
 </body>
 </html>

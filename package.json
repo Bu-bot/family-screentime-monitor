@@ -9,6 +9,8 @@
   "init-db": "node -e \"require('./src/database/init.js').initDatabase()\"",
   "add-sample-data": "node -e \"require('./src/database/sampleData.js').addSampleScreenTimeData()\"",
   "reset-with-data": "npm run init-db && npm run add-sample-data",
+  "update-children": "node -e \"require('./src/database/updateChildren.js').updateChildrenNames()\"",
+  "create-tv-table": "node -e \"require('./src/database/createTVTable.js').createTVTable()\"",
   "test": "echo \"Time to test if this thing actually works!\""
 },
   "keywords": [
