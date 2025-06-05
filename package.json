@@ -1,0 +1,31 @@
+{
+  "name": "family-screentime-monitor",
+  "version": "1.0.0",
+  "description": "A comprehensive system to monitor and analyze kids' device usage across multiple platforms",
+  "main": "src/server.js",
+ "scripts": {
+  "start": "node src/server.js",
+  "dev": "nodemon src/server.js --watch src",
+  "init-db": "node -e \"require('./src/database/init.js').initDatabase()\"",
+  "add-sample-data": "node -e \"require('./src/database/sampleData.js').addSampleScreenTimeData()\"",
+  "reset-with-data": "npm run init-db && npm run add-sample-data",
+  "test": "echo \"Time to test if this thing actually works!\""
+},
+  "keywords": [
+    "screen-time",
+    "parental-control",
+    "monitoring",
+    "family"
+  ],
+  "author": "Your Name Here",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
